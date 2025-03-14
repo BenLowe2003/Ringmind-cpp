@@ -4,7 +4,7 @@
 
 ## Ringmind Doc:
 
-#### Structs:
+#### Class:
 
 - Vector3D[3]<float>: Stores the cartesion coordinates of a 3d vector.
   - +<operator>: operator adds two vectors together
