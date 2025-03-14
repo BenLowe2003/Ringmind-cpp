@@ -24,7 +24,7 @@
 
 #### Global Functions:
 
-- update(float delta_time): Evolves the system over one timestep. IMPORTANT: deallocate memory from either next or current state variabes to avoid memory leak.
+- update_system(float delta_time): Evolves the system over one timestep. IMPORTANT: deallocate memory from either next or current state variabes to avoid memory leak.
   - next_velocities[n]<Vector3D>: Array of all the new velocities of the particles in the system.
   - next_positions[n]<Vector3D>: Array of all new velocities of the particles in the system.
   - next_masses[n]<float>: stores masses of all new particles in the system.
