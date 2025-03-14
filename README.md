@@ -30,7 +30,7 @@
   - next_masses[n]<float>: stores masses of all new particles in the system.
   - delta_momentum[n]<Vector3D>: Stores the total change in momentum over the current timestep.
 - evaluate_momentum(int i): Calculates the momentum change for the ith particle.
-- integrator(int i): evaluates the new position and velocity for the ith particle.
+- integrate(int i): evaluates the new position and velocity for the ith particle.
  
 #### CUDA variables
 ...
