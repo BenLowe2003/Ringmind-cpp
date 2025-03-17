@@ -1,5 +1,5 @@
 # Ringmind-cpp
-2025 codebase for RingMind. The speculative astrophysics project about self organising planetary rings. This is a interdisciplinary arts-humanities-science project lead by [Bronislaw Szerszynski](https://www.lancaster.ac.uk/sociology/people/bronislaw-szerszynski).
+2025 codebase for RingMind. The speculative astrophysics project about self organising planetary rings. This is a interdisciplinary arts-humanities-science project led by [Bronislaw Szerszynski](https://www.lancaster.ac.uk/sociology/people/bronislaw-szerszynski).
 
 #### Authors
 
