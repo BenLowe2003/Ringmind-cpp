@@ -6,19 +6,19 @@ public:
     float x, y, z;
 
     // Constructors
-    Vec3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+    Vector3D(float inp_x = 0.0f, float inp_y = 0.0f, float inp_z = 0.0f)
         : x(x), y(y), z(z) {}
 
     // Operators
-    Vec3 operator+(const Vector3D& other) const {
+    Vector3D operator+(const Vector3D& other) const {
         return Vector3D(x + other.x, y + other.y, z + other.z);
     }
 
-    Vec3 operator-(const Vector3D& other) const {
+    Vector3D operator-(const Vector3D& other) const {
         return Vector3D(x - other.x, y - other.y, z - other.z);
     }
 
-    Vec3 operator*(float scalar) const {
+    Vector3D operator*(float scalar) const {
         return Vector3D(x * scalar, y * scalar, z * scalar);
     }
 
