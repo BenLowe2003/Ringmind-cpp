@@ -5,7 +5,7 @@
 int main() {
     // Create a simulation with 1000 particles
     int seed = static_cast<unsigned int>(time(0));
-    ParticleSimulation sim(1000, 10, seed);
+    ParticleSimulation sim(1000, 10.0, seed);
 
     // Run the simulation
     sim.run(100);
