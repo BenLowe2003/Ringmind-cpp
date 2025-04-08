@@ -1,10 +1,10 @@
-#include "ParticleSimulation.h"   // Include the header for this class
+#include "ParticleSimulation.h"   // Include the particle Class
 #include <iostream>               // For console output
 #include <cstdlib>                // For rand() and srand()
 
 // Constructor: initializes the simulation with num_particles particles,
 // a given time step (dt), and a random seed.
-ParticleSimulation::ParticleSimulation(int num_particles, float dt, float seed)
+ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int seed)
     : number_particles(num_particles), delta_time(dt) {
 
     srand(seed); // Seed the random number generator
