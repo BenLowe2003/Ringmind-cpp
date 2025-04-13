@@ -34,9 +34,7 @@ ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int
 void ParticleSimulation::run(int steps) {
     for (int step = 0; step < steps; ++step) {
         // Update all particles' positions
-        for (size_t i = 0; i < particles.size(); ++i) {
-            integrate(i);
-        }
+        integrate();
 
         // Print out the position of the first particle every 20 steps
         if (step % 20 == 0) {
@@ -49,6 +47,8 @@ void ParticleSimulation::run(int steps) {
 }
 
 // Simple integrator: moves particle i based on its velocity and time step
-void ParticleSimulation::integrate(int i) {
-    particles[i].position = particles[i].position + particles[i].velocity * delta_time;
+void ParticleSimulation::integrate() {
+    for (int i = 0; i <  number_particles; i++){
+        particles[i].integrate(delta_time);
+    }
 }
