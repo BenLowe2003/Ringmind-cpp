@@ -37,6 +37,7 @@ class Particle {
 public:
     Vector3D position;
     Vector3D velocity;
+    Vector3D force;
     float mass;
 
     // Constructor to initialize the particle with position, velocity, and mass
@@ -44,5 +45,12 @@ public:
         : position(pos), velocity(vel), mass(m) {}
 
 };
+
+    void integrate(float dt){
+        position += dt * velocity;
+        Vector3D acceleration = force * (1 / mass)
+        velocity += dt * acceleration;
+        force = 0;
+    }
 
 #endif // PARTICLE_H
