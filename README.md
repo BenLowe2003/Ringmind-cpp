@@ -1,41 +1,39 @@
 # Ringmind-cpp
-2025 codebase for RingMind. The speculative astrophysics project about self organising planetary rings. This is a interdisciplinary arts-humanities-science project led by [Bronislaw Szerszynski](https://www.lancaster.ac.uk/sociology/people/bronislaw-szerszynski).
+2025 codebase for Ringmind, the speculative astrophysics project about self organising planetary rings. This is a interdisciplinary arts-humanities-science project led by [Bronislaw Szerszynski](https://www.lancaster.ac.uk/sociology/people/bronislaw-szerszynski). The project is currently being rewritten in C++.
 
 #### Authors
 
 - [Ben Lowe](https://github.com/BenLowe2003)
-- ...
-
+- [Charles Proudfoot](https://github.com/Kitarlie)
+- [Tushaar Davies](https://github.com/TJRavenD)
 
 ## Ringmind Doc:
 
 #### Class:
 
-- Vector3D[3]<float>: Stores the cartesion coordinates of a 3d vector.
-  - +<operator>: operator adds two vectors together
-  - *<operator>: dot product of two vectors
-  - square_norm<func>: gives the norm/magnitude of the vector (Euclidean inner product).
-  - norm<func>: gives sqrt of the square_norm function.
+- Vector3D[3]<float>: Stores the Cartesian coordinates of a 3D vector.
+  - +<operator>: operator adds two vectors together (includes corresponding += <operator>)
+  - -<operator>: operator subtracts one vector from another (includes corresponding -= <operator>)
+  - *<operator>: multiplies a vector by a scalar
+  - /<operator>: divides a vector by a scalar
+  - dot<func>: returns the dot product of two vectors
+  - square_norm<func>: returns the norm/magnitude of the vector (Euclidean inner product)
+  - norm<func>: returns sqrt of the square_norm function
+  - unit<func>: returns the unit vector in the direction of the vector
 
-- Particle[3]<Vector3D*><float*>: Stores pointers to each particles associated velocity, mass and position.
+- Particle[4]<Vector3D*><float*>: Stores pointers to each particle's position, velocity, acceleration and mass.
+  - Position<Vector3D*>: the position of the particle with respect to the initial position of the central mass
+  - Velocity<Vector3D*>: the instantaneous velocity of the particle
+  - Force<Vector3D*>: the instantaneous force acting on the particle
+  - integrate<func>: updates the velocity and position of the particle (Euler-Cromer method)
 
 #### Global Variables:
 
-- velocities[n]<Vector3D>: Array of all the velocities of the particles in the system.
-- positions[n]<Vector3D>: Array of all velocities of the particles in the system.
-- masses[n]<float>: stores masses of all particles in the system.
 - particles[n]<Particle>: stores and array of all particles in the system.
-
 
 #### Global Functions:
 
-- update_system(float delta_time): Evolves the system over one timestep. IMPORTANT: deallocate memory from either next or current state variabes to avoid memory leak.
-  - next_velocities[n]<Vector3D>: Array of all the new velocities of the particles in the system.
-  - next_positions[n]<Vector3D>: Array of all new velocities of the particles in the system.
-  - next_masses[n]<float>: stores masses of all new particles in the system.
-  - delta_momentum[n]<Vector3D>: Stores the total change in momentum over the current timestep.
-- evaluate_momentum(int i): Calculates the momentum change for the ith particle.
-- integrate(int i): evaluates the new position and velocity for the ith particle.
+- run: evolves the system over a given number of steps.
  
 #### CUDA variables
 ...
