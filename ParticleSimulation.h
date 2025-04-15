@@ -12,7 +12,8 @@ public:
     //void evaluate_momentum(int i);
 
 private:
-    void integrate(int i);
+    void integrate();
+    void interaction();
 
     std::vector<Particle> particles;
     size_t number_particles;
@@ -20,6 +21,3 @@ private:
 };
 
 #endif // PARTICLESIMULATION_H
-
-
-#endif 

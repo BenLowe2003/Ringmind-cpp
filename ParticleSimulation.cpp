@@ -1,6 +1,9 @@
-#include "ParticleSimulation.h"   // Include the particle Class
+#include "ParticleSimulation.h" // Include the particle simulation Class
+#include "Particle.h"         // Include the particle Class
 #include <iostream>               // For console output
 #include <cstdlib>                // For rand() and srand()
+
+
 
 // Constructor: initializes the simulation with num_particles particles,
 // a given time step (dt), and a random seed.
@@ -33,8 +36,8 @@ ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int
 // Runs the simulation for a number of time steps
 void ParticleSimulation::run(int steps) {
     for (int step = 0; step < steps; ++step) {
-        // Update all particles' positions
-        integrate();
+        
+		interaction(); // Update forces based on interactions
 
         // Print out the position of the first particle every 20 steps
         if (step % 20 == 0) {
@@ -42,7 +45,13 @@ void ParticleSimulation::run(int steps) {
                       << particles[0].position.x << ", "
                       << particles[0].position.y << ", "
                       << particles[0].position.z << ")\n";
+            std::cout << "Step " << step << ": Particle 1 position = ("
+                << particles[1].position.x << ", "
+                << particles[1].position.y << ", "
+                << particles[1].position.z << ")\n";
         }
+        // Update all particles' positions
+        integrate();
     }
 }
 
@@ -50,5 +59,11 @@ void ParticleSimulation::run(int steps) {
 void ParticleSimulation::integrate() {
     for (int i = 0; i <  number_particles; i++){
         particles[i].integrate(delta_time);
+    }
+}
+
+void ParticleSimulation::interaction() {
+    for (int i = 0; i < number_particles; i++) {
+		particles[i].interaction(i, particles);
     }
 }
