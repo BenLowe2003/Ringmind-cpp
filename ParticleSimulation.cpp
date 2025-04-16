@@ -15,7 +15,7 @@ ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int
     // Generate particles with random positions and velocities
     for (size_t i = 0; i < number_particles; ++i) {
 		// Random distance and angle for spherical coordinates
-		float r = static_cast<float>(rand()) / RAND_MAX * 50.0f + 10.0f; // Random distance in [10, 60)
+		float r = static_cast<float>(rand()) / RAND_MAX * 122000000.0f + 92000000.0f; // Random distance jupiters rings
 		float theta = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI; // Random angle in [0, 2π)
 		float phi = static_cast<float>(rand()) / RAND_MAX * M_PI; // Random angle in [0, π)
 
