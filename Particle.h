@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath> // For sqrt
 
-const float G = 6.6743f; // Gravitational constant (e-11)
+const float G = 6.6743e-11f; // Gravitational constant 
 const float central_body_mass = 100.0f; // Mass of the central body
 
 class Vector3D {
