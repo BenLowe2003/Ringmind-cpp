@@ -56,7 +56,7 @@ void ParticleSimulation::run(int steps) {
 
         // Print out the position of the first particle every 20 steps
         if (step % 20 == 0) {
-			for (int i = 0; i < number_particles; i++) {
+			for (size_t i = 0; i < number_particles; i++) {
 				std::cout << "Step " << step << ": Particle " << i << " position = ("
 					<< particles[i].position.x << ", "
 					<< particles[i].position.y << ", "
@@ -74,13 +74,13 @@ void ParticleSimulation::run(int steps) {
 
 // Simple integrator: moves particle i based on its velocity and time step
 void ParticleSimulation::integrate() {
-    for (int i = 0; i <  number_particles; i++){
+    for (size_t i = 0; i <  number_particles; i++){
         particles[i].integrate(delta_time);
     }
 }
 
 void ParticleSimulation::interaction() {
-    for (int i = 0; i < number_particles; i++) {
+    for (size_t i = 0; i < number_particles; i++) {
 		particles[i].interaction(i, particles);
     }
 }
