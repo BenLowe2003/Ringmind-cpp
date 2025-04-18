@@ -21,12 +21,10 @@
   - norm<func>: returns sqrt of the square_norm function
   - unit<func>: returns the unit vector in the direction of the vector
 
-- Particle[5]<Vector3D*><float*>: Stores pointers to each particle's position, velocity, force, mass and radius.
+- Particle[4]<Vector3D*><float*>: Stores pointers to each particle's position, velocity, acceleration and mass.
   - Position<Vector3D*>: the position of the particle with respect to the initial position of the central mass
   - Velocity<Vector3D*>: the instantaneous velocity of the particle
   - Force<Vector3D*>: the instantaneous force acting on the particle
-  - mass<float>: the mass of the particle in kg, default is 1kg
-  - radius<float>: the radius of the particle in m, default is 0.62m
   - integrate<func>: updates the velocity and position of the particle (Euler-Cromer method)
 
 #### Global Variables:
