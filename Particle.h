@@ -76,12 +76,11 @@ public:
     Vector3D force;
     float mass;
     float radius;
+    bool accreted;
 
     // Constructor to initialize the particle with position, velocity, and mass (radius is based on ice density)
     Particle(const Vector3D& pos = Vector3D(), const Vector3D& vel = Vector3D(), float m = 1.0f, float r = 0.62f)
-        : position(pos), velocity(vel), mass(m), radius(r) {}
-
-
+        : position(pos), velocity(vel), mass(m), radius(r) {accreted = false;}
 
     void integrate(float dt) {
         position = position + (velocity * dt); // Update position
@@ -90,28 +89,46 @@ public:
         force = Vector3D(0.0f, 0.0f, 0.0f); // Reset force to zero vector
     }
 
-	void interaction(size_t i, std::vector<Particle>& particles) {
+	void interaction(size_t i, std::vector<Particle>& particles, float accretion_probability) {
 		for (size_t j = 0; j < particles.size(); j++) {
-			if (i != j) {
+            // Prevents self-interaction or accreted particle interaction
+			if (i != j && !particles[j].accreted)  {
                 // Gravitational interaction
 				Vector3D r = particles[j].position - position; 
 				float square_distance = r.square_norm();
 				if (square_distance > 0.0f) {
 
-					force = force + (r * ((-1.0f) * particles[i].mass * particles[j].mass * G / square_distance * std::sqrt(square_distance)));
+					force += (r * ((-1.0f) * particles[i].mass * particles[j].mass * G / square_distance * std::sqrt(square_distance)));
 
-                // Collisions - formula based on Physics Stack Exchange answer
-                // (https://physics.stackexchange.com/questions/681396/elastic-collision-3d-eqaution)
-                if (r.norm() < radius){
-                    // Normal vector from particle i COM to particle j COM
-                    Vector3D n = r.unit();
-                    // Reduced mass
-                    float m = 1/(1/mass + 1/particles[j].mass);
-                    // Impact speed
-                    float v_imp = n.dot(velocity - particles[j].velocity);
-                    // Velocity change resulting from impulse J = 2mv_imp (coefficient of restitution = 1)
-                    velocity -= n * 2*m*v_imp/mass;
-                    particles[j].velocity += n * 2*m*v_imp/particles[j].mass;
+                if (r.norm() < radius + particles[j].radius){
+                    // Accretion with random probability, keeps position of particle i but with increased mass
+                    if (static_cast<float>(rand()) / RAND_MAX < accretion_probability) {
+                        // Apply conservation of momentum to find velocity
+                        velocity = (velocity * mass + particles[j].velocity * particles[j].mass)/(mass + particles[j].mass);
+                        // Sum forces on each particle
+                        force += particles[j].force;
+                        // Sum masses
+                        mass += particles[j].mass;
+                        // Sum volumes to find new radius (assume still spherical)
+                        float volume = 4 / 3 * M_PI * pow(radius, 3);
+                        float other_volume = 4 / 3 * M_PI * pow(particles[j].radius, 3);
+                        radius = pow((3 / (4 * M_PI) * (volume + other_volume)), 1/3);
+                        particles[j].accreted = true;
+
+                    }
+                    // Collisions - formula based on Physics Stack Exchange answer
+                    // (https://physics.stackexchange.com/questions/681396/elastic-collision-3d-eqaution)
+                    else {
+                        // Normal vector from particle i COM to particle j COM
+                        Vector3D n = r.unit();
+                        // Reduced mass
+                        float m = 1/(1/mass + 1/particles[j].mass);
+                        // Impact speed
+                        float v_imp = n.dot(velocity - particles[j].velocity);
+                        // Velocity change resulting from impulse J = 2mv_imp (coefficient of restitution = 1)
+                        velocity -= n * 2*m*v_imp/mass;
+                        particles[j].velocity += n * 2*m*v_imp/particles[j].mass;
+                    }
                 }
 				}
 			}
