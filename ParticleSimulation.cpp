@@ -7,8 +7,8 @@
 
 // Constructor: initializes the simulation with num_particles particles,
 // a given time step (dt), and a random seed.
-ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int seed)
-    : number_particles(num_particles), delta_time(dt) {
+ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int seed, float accretion_prob)
+    : number_particles(num_particles), delta_time(dt), accretion_probability(accretion_prob) {
 
     srand(seed); // Seed the random number generator
 
@@ -81,6 +81,8 @@ void ParticleSimulation::integrate() {
 
 void ParticleSimulation::interaction() {
     for (size_t i = 0; i < number_particles; i++) {
-		particles[i].interaction(i, particles);
+		if (!particles[i].accreted){
+			particles[i].interaction(i, particles, accretion_probability);
+		}
     }
 }
