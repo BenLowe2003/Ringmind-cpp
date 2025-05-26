@@ -14,6 +14,7 @@ private:
     void interaction();
 
     std::vector<Particle> particles;
+    std::vector<Vector3D*> positions;
     size_t number_particles;
     float delta_time;
     float accretion_probability;

@@ -45,6 +45,9 @@ ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int
 
         // Create and store the particle in the list
         particles.emplace_back(pos, vel, m);
+
+		// Store position pointer in list
+		positions.emplace_back(&particles[i].position);
     }
 }
 
@@ -82,7 +85,7 @@ void ParticleSimulation::integrate() {
 void ParticleSimulation::interaction() {
     for (size_t i = 0; i < number_particles; i++) {
 		if (!particles[i].accreted){
-			particles[i].interaction(i, particles, accretion_probability);
+			particles[i].interaction(i, particles, accretion_probability, positions);
 		}
     }
 }
