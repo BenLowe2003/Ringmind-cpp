@@ -7,6 +7,10 @@
 const float G = 6.6743e-11f; // Gravitational constant 
 const float central_body_mass = 100.0f; // Mass of the central body
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846 // Ensure M_PI is defined (required for GLEW)
+#endif
+
 class Vector3D {
 public:
     float x, y, z;
