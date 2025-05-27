@@ -18,7 +18,7 @@ int main(void){
 
     // Simulation Checks
     int seed = static_cast<unsigned int>(time(0));
-    ParticleSimulation sim(5, 1000, seed, 0.1);
+    ParticleSimulation sim(5, seed, 0.1);
     sim.run(100);
 
 	// Initialize GLFW Window
