@@ -7,17 +7,17 @@
 
 // Constructor: initializes the simulation with num_particles particles,
 // a given time step (dt), and a random seed.
-ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int seed, float accretion_prob)
-    : number_particles(num_particles), delta_time(dt), accretion_probability(accretion_prob) {
+ParticleSimulation::ParticleSimulation(float dt, unsigned int seed, float accretion_prob)
+	: delta_time(dt), accretion_probability(accretion_prob) {
 
-    srand(seed); // Seed the random number generator
+	srand(seed); // Seed the random number generator
 
-    // Generate particles with random positions and velocities
-    for (size_t i = 0; i < number_particles; ++i) {
+	// Generate particles with random positions and velocities
+	for (size_t i = 0; i < number_particles; ++i) {
 		// Random distance and angle for spherical coordinates
 		float r = static_cast<float>(rand()) / RAND_MAX * 122000000.0f + 92000000.0f; // Random distance jupiters rings
-		float theta = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI; // Random angle in [0, 2π)
-		float phi = static_cast<float>(rand()) / RAND_MAX * M_PI; // Random angle in [0, π)
+		float theta = (static_cast<float>(rand()) / RAND_MAX) * (2.0f * M_PI); // Random angle in [0, 2π)
+		float phi = static_cast<float>(rand()) / RAND_MAX; // Random angle in [0, π)
 
 		// Convert spherical coordinates to Cartesian coordinates
 		float x = r * sin(phi) * cos(theta);
@@ -28,61 +28,85 @@ ParticleSimulation::ParticleSimulation(int num_particles, float dt, unsigned int
 		Vector3D pos(x, y, z);
 
 		// Find orbital velocity
-		float v = sqrt(G * central_body_mass / r); // Orbital velocity
-		float vx = -v * sin(theta);
-		float vy = v * cos(theta);
+		float v = sqrt((G * central_body_mass) / r); // Orbital velocity
+		float vx = -v * cos(theta);
+		float vy = v * sin(theta);
 		float vz = 0.0f; // Assuming motion in the xy-plane
 
 		// Create a Vector3D object for the velocity
 		Vector3D vel(vx, vy, vz);
 
-        float m = 1.0f; // Set mass (currently unused)
+		float m = 0.1f; // Set mass (currently unused)
 
 		// Print particles information
-		std::cout << "Particle " << i << ": Position = ("
-			<< pos.x << ", " << pos.y << ", " << pos.z << "), "
-			<< "Velocity = (" << vel.x << ", " << vel.y << ", " << vel.z << ")\n";
+		//std::cout << "Particle " << i << ": Position = ("
+			//<< pos.x << ", " << pos.y << ", " << pos.z << "), "
+			//<< "Velocity = (" << vel.x << ", " << vel.y << ", " << vel.z << ")\n";
 
-        // Create and store the particle in the list
-        particles.emplace_back(pos, vel, m);
-    }
+		// Create and store the particle in the list
+		particles.emplace_back(pos, vel, m);
+	}
 }
 
 // Runs the simulation for a number of time steps
 void ParticleSimulation::run(int steps) {
-    for (int step = 0; step < steps; ++step) {
-        
+	for (int step = 0; step < steps; ++step) {
+
 		interaction(); // Update forces based on interactions
 
-        // Print out the position of the first particle every 20 steps
-        if (step % 20 == 0) {
-			for (size_t i = 0; i < number_particles; i++) {
-				std::cout << "Step " << step << ": Particle " << i << " position = ("
-					<< particles[i].position.x << ", "
-					<< particles[i].position.y << ", "
-					<< particles[i].position.z << ") "
-					<< "Velocity = ("
-					<< particles[i].velocity.x << ", "
-					<< particles[i].velocity.y << ", "
-					<< particles[i].velocity.z << ")\n";
-			}
-        }
-        // Update all particles' positions
-        integrate();
-    }
+		// Print out the position of the first particle every 20 steps
+		//if (step % 50 == 0) {
+		//	for (size_t i = 0; i < number_particles; i++) {
+		//		std::cout << "Step " << step << ": Particle " << i << " position = ("
+		//			<< particles[i].position.x << ", "
+		//			<< particles[i].position.y << ", "
+		//			<< particles[i].position.z << ") "
+		//			<< "Velocity = ("
+		//			<< particles[i].velocity.x << ", "
+		//			<< particles[i].velocity.y << ", "
+		//			<< particles[i].velocity.z << ")\n";
+		//	}
+		//}
+		// Update all particles' positions
+		integrate();
+	}
 }
 
 // Simple integrator: moves particle i based on its velocity and time step
 void ParticleSimulation::integrate() {
-    for (size_t i = 0; i <  number_particles; i++){
-        particles[i].integrate(delta_time);
-    }
+	for (size_t i = 0; i < number_particles; i++) {
+		particles[i].integrate(delta_time);
+	}
 }
 
 void ParticleSimulation::interaction() {
-    for (size_t i = 0; i < number_particles; i++) {
-		if (!particles[i].accreted){
+	for (size_t i = 0; i < number_particles; i++) {
+		if (!particles[i].accreted) {
 			particles[i].interaction(i, particles, accretion_probability);
 		}
-    }
+	}
+}
+
+float example_positions[8 * 3] = {
+		0.5f, 0.5f, 0.5f
+		, -0.5f, 0.5f, 0.5f
+		, -0.5f, -0.5f, 0.5f
+		, 0.5f, -0.5f, 0.5f
+		, 0.5f, 0.5f, -0.5f
+		, -0.5f, 0.5f, -0.5f
+		, -0.5f, -0.5f, -0.5f
+		, 0.5f, -0.5f, -0.5f
+};
+
+void ParticleSimulation::UpdatePositions() {
+	const float scale = 0.00000001f;
+	for (size_t i = 0; i < number_particles; i++) {
+		positions[3 * i] = particles[i].position.x * scale;
+		positions[3 * i + 1] = particles[i].position.y * scale;
+		positions[3 * i + 2] = particles[i].position.z * scale;
+	}
+
+	for (int i = 0; i < 8 * 3; i++) {
+		positions[i] *= example_positions[i];
+	}
 }
