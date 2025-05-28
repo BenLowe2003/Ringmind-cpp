@@ -18,20 +18,26 @@ int main(void){
 
     // Simulation Checks
     int seed = static_cast<unsigned int>(time(0));
-    ParticleSimulation simulation(10000000, seed, 0.1);
+    ParticleSimulation simulation(1000000, seed, 0.1);
 	simulation.UpdatePositions();
 
 	// Initialize GLFW Window
     GLFWwindow* window;
 
+
+
     /* Initialize the library */
     if (!glfwInit())
         return -1;
 
-	
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+
+    // Create a full screen window
+	window = glfwCreateWindow(mode->width, mode->height, "Particle Simulation", primaryMonitor, NULL);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    //window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -70,21 +76,22 @@ int main(void){
 	glBindVertexArray(vao);
 
     float example_positions[8 * 3] = {
-		0.5f, 0.5f, 0.5f
-		, -0.5f, 0.5f, 0.5f
-		, -0.5f, -0.5f, 0.5f
-		, 0.5f, -0.5f, 0.5f
-		, 0.5f, 0.5f, -0.5f
-		, -0.5f, 0.5f, -0.5f
-		, -0.5f, -0.5f, -0.5f
-		, 0.5f, -0.5f, -0.5f
-	};
+        0.5f, 0.5f, 0.5f
+        , -0.5f, 0.5f, 0.5f
+        , -0.5f, -0.5f, 0.5f
+        , 0.5f, -0.5f, 0.5f
+        , 0.5f, 0.5f, -0.5f
+        , -0.5f, 0.5f, -0.5f
+        , -0.5f, -0.5f, -0.5f
+        , 0.5f, -0.5f, -0.5f
+    };
 
 
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, number_particles * 3 * sizeof(float), simulation.positions, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, 8 * 3 * sizeof(float), example_positions, GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
@@ -141,17 +148,21 @@ int main(void){
             theta_x -= 0.01f;
         }
 
-		ProjectionMatrix(projMatrix, 30.0f, 1.0f, 0.1f, 1.0f, theta_x, theta_y, 1);
+		ProjectionMatrix(projMatrix, 30.0f, 1.0f, 0.1f, 1.0f, theta_x, theta_y, 4);
 		glUniformMatrix4fv(locationMVP, 1, GL_FALSE, projMatrix);
 
         // Update Positions
         glBindBuffer(GL_ARRAY_BUFFER, buffer);
         glBufferSubData(GL_ARRAY_BUFFER, 0, number_particles * 3 * sizeof(float), simulation.positions);
+        //glBufferSubData(GL_ARRAY_BUFFER, 0, 8 * 3 * sizeof(float), example_positions);
+
+        
 
 		glBindVertexArray(vao);
 
-        glPointSize(1.0f);
+        glPointSize(3.0f);
 		GLCall(glDrawArrays(GL_POINTS, 0, number_particles));
+        //GLCall(glDrawArrays(GL_POINTS, 0, 8));
         
 
         /* Swap front and back buffers */
