@@ -16,8 +16,8 @@ ParticleSimulation::ParticleSimulation(float dt, unsigned int seed, float accret
 	for (size_t i = 0; i < number_particles; ++i) {
 		// Random distance and angle for spherical coordinates
 		float r = static_cast<float>(rand()) / RAND_MAX * 122000000.0f + 92000000.0f; // Random distance jupiters rings
-		float theta = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI; // Random angle in [0, 2π)
-		float phi = static_cast<float>(rand()) / RAND_MAX * M_PI; // Random angle in [0, π)
+		float theta = (static_cast<float>(rand()) / RAND_MAX) * (2.0f * M_PI); // Random angle in [0, 2π)
+		float phi = static_cast<float>(rand()) / RAND_MAX; // Random angle in [0, π)
 
 		// Convert spherical coordinates to Cartesian coordinates
 		float x = r * sin(phi) * cos(theta);
@@ -28,15 +28,15 @@ ParticleSimulation::ParticleSimulation(float dt, unsigned int seed, float accret
 		Vector3D pos(x, y, z);
 
 		// Find orbital velocity
-		float v = sqrt(G * central_body_mass / r); // Orbital velocity
-		float vx = -v * sin(theta);
-		float vy = v * cos(theta);
+		float v = sqrt((G * central_body_mass) / r); // Orbital velocity
+		float vx = -v * cos(theta);
+		float vy = v * sin(theta);
 		float vz = 0.0f; // Assuming motion in the xy-plane
 
 		// Create a Vector3D object for the velocity
 		Vector3D vel(vx, vy, vz);
 
-		float m = 1.0f; // Set mass (currently unused)
+		float m = 0.1f; // Set mass (currently unused)
 
 		// Print particles information
 		//std::cout << "Particle " << i << ": Position = ("
@@ -87,11 +87,26 @@ void ParticleSimulation::interaction() {
 	}
 }
 
+float example_positions[8 * 3] = {
+		0.5f, 0.5f, 0.5f
+		, -0.5f, 0.5f, 0.5f
+		, -0.5f, -0.5f, 0.5f
+		, 0.5f, -0.5f, 0.5f
+		, 0.5f, 0.5f, -0.5f
+		, -0.5f, 0.5f, -0.5f
+		, -0.5f, -0.5f, -0.5f
+		, 0.5f, -0.5f, -0.5f
+};
+
 void ParticleSimulation::UpdatePositions() {
-	const float scale = 0.000000001f;
+	const float scale = 0.00000001f;
 	for (size_t i = 0; i < number_particles; i++) {
 		positions[3 * i] = particles[i].position.x * scale;
 		positions[3 * i + 1] = particles[i].position.y * scale;
 		positions[3 * i + 2] = particles[i].position.z * scale;
+	}
+
+	for (int i = 0; i < 8 * 3; i++) {
+		positions[i] *= example_positions[i];
 	}
 }
