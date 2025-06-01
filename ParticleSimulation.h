@@ -4,7 +4,7 @@
 #include <vector>
 #include "Particle.h"
 
-constexpr size_t number_particles = 500; // Number of particles in the simulation
+constexpr size_t number_particles = 1000; // Number of particles in the simulation
 
 class ParticleSimulation {
 public:
