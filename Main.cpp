@@ -18,7 +18,7 @@ int main(void){
 
     // Simulation Checks
     int seed = static_cast<unsigned int>(time(0));
-    ParticleSimulation simulation(1000000, seed, 0.1);
+    ParticleSimulation simulation(0.02, seed, 0.1);
 	simulation.UpdatePositions();
 
 	// Initialize GLFW Window
@@ -136,19 +136,19 @@ int main(void){
 
 		// Update Matrix
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            theta_y += 0.01f;
+            theta_y += 0.05f;
         }
         else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            theta_y -= 0.01f;
+            theta_y -= 0.05f;
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            theta_x += 0.01f;
+            theta_x += 0.05f;
         }
         else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            theta_x -= 0.01f;
+            theta_x -= 0.05f;
         }
 
-		ProjectionMatrix(projMatrix, 30.0f, 1.0f, 0.1f, 1.0f, theta_x, theta_y, 4);
+		ProjectionMatrix(projMatrix, 30.0f, 1.75f, 0.1f, 1.0f, theta_x, theta_y, 4);
 		glUniformMatrix4fv(locationMVP, 1, GL_FALSE, projMatrix);
 
         // Update Positions
@@ -172,8 +172,18 @@ int main(void){
         glfwPollEvents();
 
 		// Update the simulation
-		simulation.run(1); // Run one step of the simulation
+		simulation.run(3); // Run one step of the simulation
 		simulation.UpdatePositions();
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		{
+			glfwSetWindowShouldClose(window, true);
+		}
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			// Reset the simulation
+			simulation = ParticleSimulation(0.02, seed, 0.1);
+			simulation.UpdatePositions();
+        }
     }
 
 	glDeleteProgram(shader);

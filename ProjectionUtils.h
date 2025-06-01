@@ -49,7 +49,8 @@ void RotationMatrix(float* m, float theta_x, float theta_y) {
 	float cosY = cos(theta_y);
 	float sinY = sin(theta_y);
 	float x[16] = { 1,0,0,0, 0,cosX,-sinX,0, 0,sinX,cosX,0, 0,0,0,1 };
-	float y[16] = { cosY,0,sinY,0, 0,1,0,0, -sinY,0,cosY,0, 0,0,0,1 };
+	//float y[16] = {cosY, 0, sinY, 0,0,    1, 0,    0,-sinY, 0, cosY, 0,0,    0, 0,    1};
+	float y[16] = {cosY, -sinY, 0, 0,sinY,  cosY, 0, 0,0,     0,    1, 0,0,     0,    0, 1};
 	MatrixMultiply(m, x, y);
 }
 
@@ -75,6 +76,8 @@ void ProjectionMatrix(float* m, float fovY, float aspect, float zNear, float zFa
 	PerspectiveMatrix(projection, fovY, aspect, zNear, zFar);
 	//OrthographicMatrix(projection, -orthoWidth, orthoWidth, -orthoHeight, orthoHeight, zNear, zFar);
 	MatrixMultiply(m, projection, m);
+
+	//transpose(m, mt);
 
 	//std::cout << "Projection Matrix: " << std::endl;
 	//for (int i = 0; i < 16; ++i) std::cout << m[i] << ((i % 4 == 3) ? "\n" : " ");

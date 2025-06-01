@@ -4,12 +4,20 @@
 #define _USE_MATH_DEFINES
 #include <cmath> // For sqrt
 
-const float G = 6.6743e-11f; // Gravitational constant 
-const float central_body_mass = 100.0f; // Mass of the central body
+const float G = 0.1f; // Gravitational constant 6.6743e-11f
+const float central_body_mass = 50 ; // 2.0f * pow(10,12)
+
+const float radius_multiplier = 3; // 122000000.0f;
+const float radius_displacement = 0.3; // 92000000.0f
+const float scale_factor = 0.2f; // Scale factor for the simulation
+const float nu = 0.05f; // Viscosity coefficient for viscous force
+const float nu_radius = 0.002f; // characteristic radius for viscous force
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 // Ensure M_PI is defined (required for GLEW)
 #endif
+
+#include <cstdlib>                // For rand() and srand()
 
 class Vector3D {
 public:
@@ -82,9 +90,38 @@ public:
     float radius;
     bool accreted;
 
-    // Constructor to initialize the particle with position, velocity, and mass (radius is based on ice density)
-    Particle(const Vector3D& pos = Vector3D(), const Vector3D& vel = Vector3D(), float m = 1.0f, float r = 0.62f)
-        : position(pos), velocity(vel), mass(m), radius(r) {accreted = false;}
+
+
+    Particle() {
+        // Random distance and angle for spherical coordinates
+        float r = static_cast<float>(rand()) / RAND_MAX * radius_multiplier + radius_displacement; // Random distance jupiters rings
+        float theta = (static_cast<float>(rand()) / RAND_MAX) * (2.0f * M_PI); // Random angle in [0, 2*pi)
+        float phi = (static_cast<float>(rand()) / RAND_MAX) * M_PI/2; // Random angle in [0, pi)
+
+        // Convert spherical coordinates to Cartesian coordinates
+        float x = r * cos(phi) * cos(theta);
+        float y = r * cos(phi) * sin(theta);
+        float z = r * sin(phi);
+
+        // Create a Vector3D object for the position
+		position = Vector3D(x, y, z);
+		
+
+        // Find orbital velocity
+        float v = sqrt((G * central_body_mass) / r); // Orbital velocity
+        float vx = -v * sin(theta);
+        float vy = v * cos(theta);
+        float vz = 0.0f; // Assuming motion in the xy-plane
+
+        // Create a Vector3D object for the velocity
+		velocity = Vector3D(vx, vy, vz);
+
+		mass = 0.1f; // Set mass (currently unused)
+
+
+    }
+
+
 
     void integrate(float dt) {
         position = position + (velocity * dt); // Update position
@@ -93,55 +130,26 @@ public:
         force = Vector3D(0.0f, 0.0f, 0.0f); // Reset force to zero vector
     }
 
-	void interaction(size_t i, std::vector<Particle>& particles, float accretion_probability) {
-		for (size_t j = 0; j < particles.size(); j++) {
-            // Prevents self-interaction or accreted particle interaction
-			if (i != j && !particles[j].accreted)  {
-                // Gravitational interaction
-				Vector3D r = particles[j].position - position; 
-				float square_distance = r.square_norm();
-				if (square_distance > 0.0f) {
+    void interaction(size_t i, std::vector<Particle>& particles, float accretion_probability) {
 
-					force += (r * ((-1.0f) * particles[i].mass * particles[j].mass * G / square_distance * std::sqrt(square_distance)));
-
-                if (r.norm() < radius + particles[j].radius){
-                    // Accretion with random probability, keeps position of particle i but with increased mass
-                    if (static_cast<float>(rand()) / RAND_MAX < accretion_probability) {
-                        // Apply conservation of momentum to find velocity
-                        velocity = (velocity * mass + particles[j].velocity * particles[j].mass)/(mass + particles[j].mass);
-                        // Sum forces on each particle
-                        force += particles[j].force;
-                        // Sum masses
-                        mass += particles[j].mass;
-                        // Sum volumes to find new radius (assume still spherical)
-                        float volume = 4 / 3 * M_PI * pow(radius, 3);
-                        float other_volume = 4 / 3 * M_PI * pow(particles[j].radius, 3);
-                        radius = pow((3 / (4 * M_PI) * (volume + other_volume)), 1/3);
-                        particles[j].accreted = true;
-
-                    }
-                    // Collisions - formula based on Physics Stack Exchange answer
-                    // (https://physics.stackexchange.com/questions/681396/elastic-collision-3d-eqaution)
-                    else {
-                        // Normal vector from particle i COM to particle j COM
-                        Vector3D n = r.unit();
-                        // Reduced mass
-                        float m = 1/(1/mass + 1/particles[j].mass);
-                        // Impact speed
-                        float v_imp = n.dot(velocity - particles[j].velocity);
-                        // Velocity change resulting from impulse J = 2mv_imp (coefficient of restitution = 1)
-                        velocity -= n * 2*m*v_imp/mass;
-                        particles[j].velocity += n * 2*m*v_imp/particles[j].mass;
-                    }
-                }
-				}
-			}
-		}
-
-        // Apply central body force.
+		// Calculate gravitational force on this particle due to the central body
+		force = Vector3D(0.0f, 0.0f, 0.0f); // Reset force to zero vector
 		float square_distance = position.square_norm();
-		force = force + (position * ((-1.0f) * particles[i].mass * central_body_mass * G / square_distance * std::sqrt(square_distance))); // Apply gravitational force
-	}
+		float distance = sqrt(square_distance);
+		float force_magnitude = G * mass * (central_body_mass / square_distance); // Gravitational force magnitude
+		force -= position.unit() * force_magnitude; // Apply force towards the central body
+
+        // calculate viscous force between particles.
+        for (size_t j = 0; j < particles.size(); ++j) {
+            float square_distance = (position - particles[j].position).square_norm();
+            if (i != j && square_distance < 0.1) {
+                Vector3D i_momentum = velocity * mass;
+                Vector3D j_momentum = particles[j].velocity * particles[j].mass;
+                Vector3D relative_momenutum = i_momentum - j_momentum;
+                force -= relative_momenutum * (nu); // Viscous force
+            }
+        }
+    }
 };
 
 #endif // PARTICLE_H
